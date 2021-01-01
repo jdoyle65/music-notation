@@ -20,32 +20,28 @@ const init = () => {
 
   ctx.scale(2, 2);
 
+  renderCScale(ctx);
+};
+
+const renderCScale = (ctx: CanvasRenderingContext2D) => {
   const yMargin = 10;
+  const gap = Math.round(Glyphs.NoteHead.Radius * 0.61666 * 2);
+  const staff = new Glyphs.Staff(1000, gap);
+  staff.y = yMargin;
+  staff.draw(ctx);
 
-  const whole = Glyphs.NoteHead.whole();
-  whole.y = yMargin;
-  const half = Glyphs.NoteHead.half();
-  half.y = yMargin;
-  const quarter = Glyphs.NoteHead.default();
-  quarter.y = yMargin;
+  const cY = gap;
+  const notes: NoteHead[] = new Array(8).fill(0).map((noop, i) => {
+    const n = NoteHead.half();
+    n.y = yMargin + cY * (4.5 - i * 0.5);
+    n.x = i * gap + i * 20;
+    return n;
+  });
 
-  half.x = whole.x + Glyphs.NoteHead.Radius * 2 + 20;
-  quarter.x = half.x + Glyphs.NoteHead.Radius * 2 + 20;
-
-  whole.draw(ctx);
-  half.draw(ctx);
-  quarter.draw(ctx);
-
-  ctx.beginPath();
-  ctx.lineTo(0, yMargin);
-  ctx.lineTo(1000, yMargin);
-  ctx.stroke();
-
-  const yBottom = Math.round(NoteHead.Radius * 0.61666) * 2;
-  ctx.beginPath();
-  ctx.lineTo(0, yMargin + yBottom);
-  ctx.lineTo(1000, yMargin + yBottom);
-  ctx.stroke();
+  notes.forEach((n) => {
+    console.log(n.x, n.y);
+    n.draw(ctx);
+  });
 };
 
 init();

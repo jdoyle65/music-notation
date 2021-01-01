@@ -13,7 +13,10 @@ export class NoteHead extends Glyph {
 
   draw(context: CanvasRenderingContext2D): void {
     const oldComposite = context.globalCompositeOperation;
-    context.globalCompositeOperation = "xor";
+
+    if (!this.filled) {
+      context.globalCompositeOperation = "xor";
+    }
 
     context.strokeStyle = this.color;
 
@@ -21,13 +24,14 @@ export class NoteHead extends Glyph {
     context.ellipse(
       this.x + this.width,
       this.y + this.height,
-      this.whole ? this.width : Math.round(this.width * 0.75),
-      this.whole ? this.height : Math.round(this.height * 0.75),
+      this.whole ? this.width : Math.round(this.width * 0.8),
+      this.whole ? this.height : Math.round(this.height * 0.8),
       this.whole ? 0 : NoteHead.Rotation,
       0,
       Math.PI * 2
     );
     context.fill();
+    context.closePath();
 
     if (!this.filled) {
       const xRadius = Math.round(
@@ -42,13 +46,14 @@ export class NoteHead extends Glyph {
       context.ellipse(
         this.x + this.width,
         this.y + this.height,
-        this.whole ? xRadius : Math.round(xRadius * 0.8),
-        this.whole ? yRadius : Math.round(yRadius * 0.8),
+        this.whole ? xRadius : Math.round(xRadius * 0.9),
+        this.whole ? yRadius : Math.round(yRadius * 0.9),
         NoteHead.Rotation,
         0,
         Math.PI * 2
       );
       context.fill();
+      context.closePath();
     }
 
     context.globalCompositeOperation = oldComposite;
