@@ -1,5 +1,6 @@
 import { Groups } from "../libs/renderer";
 import { Note } from "../libs/renderer/groups";
+import { parseBarShorthand } from "../libs/renderer/utilities";
 
 const init = () => {
   const body = document.body;
@@ -18,37 +19,44 @@ const init = () => {
 
   ctx.scale(2, 2);
 
-  renderCScale(ctx);
+  render(ctx);
 };
 
-const renderCScale = (ctx: CanvasRenderingContext2D) => {
-  const yMargin = 10;
+const renderBars = (
+  ctx: CanvasRenderingContext2D,
+  bars: string[],
+  yOffset: number
+): void => {
+  let lastBar: Groups.Bar | undefined;
 
-  const notes: Note[] = [
-    {
-      pitch: "C4",
-      duration: "half",
-    },
-    {
-      pitch: "D4",
-      duration: "half",
-    },
-    {
-      pitch: "E4",
-      duration: "half",
-    },
-    {
-      pitch: "F4",
-      duration: "half",
-    },
-    {
-      pitch: "G4",
-      duration: "half",
-    },
-  ];
+  const barGlyphs = bars
+    .map((bar) => parseBarShorthand(bar))
+    .map((bar) => {
+      const barGlyph = new Groups.Bar(
+        lastBar ? lastBar.x + lastBar.width : 0,
+        yOffset,
+        bar as Groups.Note[]
+      );
+      lastBar = barGlyph;
 
-  const bar = new Groups.Bar(notes);
-  bar.draw(ctx);
+      return barGlyph;
+    });
+
+  barGlyphs.forEach((bar) => {
+    if (!bar.isValid()) {
+      console.error("Invalid bar found");
+    }
+  });
+
+  barGlyphs.forEach((bar) => bar.draw(ctx));
+};
+
+const render = (ctx: CanvasRenderingContext2D) => {
+  const bars: string[] = ["d4-2 e4-4 g4-4", "f4-2 g4-2"];
+  const bars2: string[] = ["f4-4 b5-4 d5-2", "c5-1"];
+
+  renderBars(ctx, bars, 0);
+  renderBars(ctx, bars2, 200);
 };
 
 init();

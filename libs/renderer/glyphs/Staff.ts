@@ -3,8 +3,11 @@ import Glyph from "./Glyph";
 export class Staff extends Glyph {
   static readonly Color = "#999";
 
-  constructor(protected width: number, protected size: number) {
+  height: number;
+
+  constructor(public width: number, public size: number) {
     super();
+    this.height = size * 4;
   }
 
   draw(context: CanvasRenderingContext2D): void {

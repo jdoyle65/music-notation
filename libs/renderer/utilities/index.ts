@@ -10,9 +10,10 @@ export const noteWidth = 1.62 * noteHeight;
  * @param pitch Scientific pitch notation string
  */
 export const decodePitchString = (pitch: string): PitchData => {
-  const parts = pitch.match(/([A-G])(#|bb?|x)?([0-9])/);
+  const regex = /^([A-Ga-g])(#|bb?|x)?([0-9])$/;
+  const parts = pitch.match(regex);
 
-  if (!parts) {
+  if (!parts || !regex.test(pitch)) {
     throw new TypeError(`Unexpected pitch string: ${pitch}`);
   }
 
@@ -38,6 +39,32 @@ export const pitchDataToOffset = (pitchData: PitchData): number => {
   const middleCOffset = 30;
 
   return noteOffset + octave * 7 - middleCOffset;
+};
+
+export const parseBarShorthand = (bar: string) => {
+  return bar.split(/\s+/).map((b) => parseNoteShorthand(b));
+};
+
+export const parseNoteShorthand = (note: string) => {
+  const [pitch, duration] = note.split("-");
+
+  return {
+    pitch,
+    duration: parseDurationShorthand(parseInt(duration)),
+  };
+};
+
+export const parseDurationShorthand = (duration: number) => {
+  switch (duration) {
+    case 1:
+      return "whole";
+    case 2:
+      return "half";
+    case 4:
+      return "quarter";
+    default:
+      return "quarter";
+  }
 };
 
 export interface PitchData {
