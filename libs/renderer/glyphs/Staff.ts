@@ -1,6 +1,8 @@
 import Glyph from "./Glyph";
 
 export class Staff extends Glyph {
+  static readonly Color = "#999";
+
   constructor(protected width: number, protected size: number) {
     super();
   }
@@ -9,10 +11,13 @@ export class Staff extends Glyph {
     const lines = 5;
 
     for (let i = 0; i < lines; i++) {
-      context.strokeStyle = "#999";
+      context.strokeStyle = Staff.Color;
       context.beginPath();
-      context.lineTo(this.x, this.y + i * this.size);
-      context.lineTo(this.x + this.width, this.y + i * this.size);
+      context.lineTo(Math.round(this.x), Math.round(this.y + i * this.size));
+      context.lineTo(
+        Math.round(this.x + this.width),
+        Math.round(this.y + i * this.size)
+      );
       context.stroke();
     }
   }

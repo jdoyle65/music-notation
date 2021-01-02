@@ -1,5 +1,5 @@
-import { Glyphs } from "../libs/renderer";
-import { NoteHead } from "../libs/renderer/glyphs";
+import { Groups } from "../libs/renderer";
+import { Note } from "../libs/renderer/groups";
 
 const init = () => {
   const body = document.body;
@@ -16,8 +16,6 @@ const init = () => {
     throw new Error("No 2D context");
   }
 
-  console.log("Initialized!");
-
   ctx.scale(2, 2);
 
   renderCScale(ctx);
@@ -25,23 +23,32 @@ const init = () => {
 
 const renderCScale = (ctx: CanvasRenderingContext2D) => {
   const yMargin = 10;
-  const gap = Math.round(Glyphs.NoteHead.Radius * 0.61666 * 2);
-  const staff = new Glyphs.Staff(1000, gap);
-  staff.y = yMargin;
-  staff.draw(ctx);
 
-  const cY = gap;
-  const notes: NoteHead[] = new Array(8).fill(0).map((noop, i) => {
-    const n = NoteHead.half();
-    n.y = yMargin + cY * (4.5 - i * 0.5);
-    n.x = i * gap + i * 20;
-    return n;
-  });
+  const notes: Note[] = [
+    {
+      pitch: "C4",
+      duration: "half",
+    },
+    {
+      pitch: "D4",
+      duration: "half",
+    },
+    {
+      pitch: "E4",
+      duration: "half",
+    },
+    {
+      pitch: "F4",
+      duration: "half",
+    },
+    {
+      pitch: "G4",
+      duration: "half",
+    },
+  ];
 
-  notes.forEach((n) => {
-    console.log(n.x, n.y);
-    n.draw(ctx);
-  });
+  const bar = new Groups.Bar(notes);
+  bar.draw(ctx);
 };
 
 init();
