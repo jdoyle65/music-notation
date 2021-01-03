@@ -1,27 +1,31 @@
 import { Duration, NoteHead, Staff } from "../glyphs";
+import { Stem } from "../glyphs/Stem";
 import { noteHeight, noteWidth, pitchStringToOffset } from "../utilities";
+import { BarTransposer } from "./BarTransposer";
 
 export class Bar {
   get width(): number {
     return this.staff?.width ?? 0;
   }
 
-  protected noteHeads: NoteHead[];
+  protected notes: NoteData[];
   protected ledgerLines: { x: number; y: number }[] = [];
   protected staff: Staff;
 
   private noteHeight: number;
   private noteOffset: number;
   private middleCOffset: number;
+  private transposer: BarTransposer;
 
   constructor(
     public x = 0,
     public y = 0,
-    public notes: Note[],
+    notes: Note[],
     public clef: Clef = "treble",
     public key: string = "C",
     public timeSignature: string = "4/4"
   ) {
+    this.transposer = new BarTransposer("B5", this.y);
     const width = notes.length * noteWidth;
     this.noteHeight = noteHeight;
     this.noteOffset = noteHeight / 2;
@@ -32,13 +36,21 @@ export class Bar {
     // TODO: Adjust to clef
     this.middleCOffset = 9;
 
-    this.noteHeads = notes.map((n, i) => {
+    this.notes = notes.map((n, i) => {
       const head = this.buildNoteHead(n);
 
       head.x += i * noteWidth + this.x;
-      head.y += this.y;
+      head.y = this.transposer.pitchToY(n.pitch);
 
-      return head;
+      const noteData: NoteData = { ...n, head };
+
+      if (head.hasStem()) {
+        noteData.stem = this.buildStem(noteData);
+      }
+
+      this.addLedgers(noteData);
+
+      return noteData;
     });
   }
 
@@ -46,16 +58,18 @@ export class Bar {
     this.staff.draw(context);
     this.drawBarEnds(context);
 
-    this.noteHeads.forEach((n) => n.draw(context));
     this.ledgerLines.forEach((l) => {
       context.beginPath();
-      context.lineTo(Math.round(l.x + this.x), Math.round(l.y + this.y));
-      context.lineTo(
-        Math.round(l.x + noteWidth + this.x),
-        Math.round(l.y + this.y)
-      );
+      context.lineTo(Math.round(l.x), Math.round(l.y));
+      context.lineTo(Math.round(l.x + noteWidth), Math.round(l.y));
       context.strokeStyle = Staff.Color;
+      context.lineWidth = 1;
       context.stroke();
+    });
+
+    this.notes.forEach((n) => {
+      n.head.draw(context);
+      n.stem?.draw(context);
     });
   }
 
@@ -113,6 +127,48 @@ export class Bar {
 
     return noteHead;
   }
+
+  protected buildStem(note: NoteData): Stem {
+    const centerNoteOffset = this.transposer.centerNoteOffset;
+    const offset = pitchStringToOffset(note.pitch);
+    const stem = Stem.forNoteHead(
+      note.head,
+      offset <= centerNoteOffset ? "up" : "down"
+    );
+
+    if (offset <= 0) {
+      stem.length = (noteHeight / 2) * (centerNoteOffset - offset);
+    } else if (offset >= 12) {
+      stem.length = (noteHeight / 2) * (offset - centerNoteOffset);
+    }
+
+    return stem;
+  }
+
+  protected addLedgers(note: NoteData): void {
+    const centerNoteOffset = this.transposer.centerNoteOffset;
+    const offset = pitchStringToOffset(note.pitch);
+
+    if (offset <= centerNoteOffset - 6) {
+      const ledgerCount = Math.floor(centerNoteOffset - 6 - offset / 2 + 1);
+
+      new Array(ledgerCount).fill("").map((l, i) => {
+        this.ledgerLines.push({
+          x: note.head.x,
+          y: this.staff.y + this.staff.height + noteHeight * (i + 1),
+        });
+      });
+    } else if (offset >= centerNoteOffset + 6) {
+      const ledgerCount = Math.floor(offset / 2 - centerNoteOffset + 1);
+
+      new Array(ledgerCount).fill("").map((l, i) => {
+        this.ledgerLines.push({
+          x: note.head.x,
+          y: this.staff.y - noteHeight * (i + 1),
+        });
+      });
+    }
+  }
 }
 
 export interface Note {
@@ -120,4 +176,9 @@ export interface Note {
   duration: Duration;
 }
 
-export type Clef = "treble" | "tenor" | "bass";
+export interface NoteData extends Note {
+  head: NoteHead;
+  stem?: Stem;
+}
+
+export type Clef = "treble" | "alto" | "bass";

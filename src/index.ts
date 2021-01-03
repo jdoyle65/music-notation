@@ -7,8 +7,8 @@ const init = () => {
   const canvas = document.createElement("canvas");
   canvas.width = 1000;
   canvas.height = 750;
-  canvas.style.width = "500px";
-  canvas.style.height = "375px";
+  canvas.style.width = `${canvas.width * 0.75}px`;
+  canvas.style.height = `${canvas.height * 0.75}px`;
   body.appendChild(canvas);
 
   const ctx = canvas.getContext("2d");
@@ -52,11 +52,12 @@ const renderBars = (
 };
 
 const render = (ctx: CanvasRenderingContext2D) => {
-  const bars: string[] = ["d4-2 e4-4 g4-4", "f4-2 g4-2"];
-  const bars2: string[] = ["f4-4 b5-4 d5-2", "c5-1"];
+  // const bars: string[] = ["d4-2 e4-4 g4-4", "f4-2 g4-2"];
+  // const bars2: string[] = ["f4-4 b5-4 d5-2", "c5-1"];
 
-  renderBars(ctx, bars, 0);
-  renderBars(ctx, bars2, 200);
+  renderBars(ctx, ["c4-4 a4-4 c6-4 d6-4", "f5-4 g5-4 a6-4 b6-4"], 100);
+  // renderBars(ctx, bars, 0);
+  // renderBars(ctx, bars2, 200);
 };
 
 init();

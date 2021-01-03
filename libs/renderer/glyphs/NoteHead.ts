@@ -12,6 +12,10 @@ export class NoteHead extends Glyph {
     super();
   }
 
+  hasStem(): boolean {
+    return !this.whole;
+  }
+
   draw(context: CanvasRenderingContext2D): void {
     const oldComposite = context.globalCompositeOperation;
 

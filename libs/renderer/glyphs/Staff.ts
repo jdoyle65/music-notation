@@ -15,6 +15,7 @@ export class Staff extends Glyph {
 
     for (let i = 0; i < lines; i++) {
       context.strokeStyle = Staff.Color;
+      context.lineWidth = 1;
       context.beginPath();
       context.lineTo(Math.round(this.x), Math.round(this.y + i * this.size));
       context.lineTo(
