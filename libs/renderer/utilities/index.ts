@@ -1,4 +1,4 @@
-export const noteHeight = 12;
+export const noteHeight = 10;
 export const noteWidth = 1.62 * noteHeight;
 
 /**

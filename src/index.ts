@@ -55,7 +55,7 @@ const render = (ctx: CanvasRenderingContext2D) => {
   // const bars: string[] = ["d4-2 e4-4 g4-4", "f4-2 g4-2"];
   // const bars2: string[] = ["f4-4 b5-4 d5-2", "c5-1"];
 
-  renderBars(ctx, ["c4-4 a4-4 c6-4 d6-4", "f5-4 g5-4 a6-4 b6-4"], 100);
+  renderBars(ctx, ["c4-4 a4-4 c6-4 d6-4", "f5-4 g5-4 a6-4 b6-4"], 50);
   // renderBars(ctx, bars, 0);
   // renderBars(ctx, bars2, 200);
 };

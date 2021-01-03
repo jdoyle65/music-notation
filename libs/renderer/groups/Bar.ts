@@ -136,9 +136,9 @@ export class Bar {
       offset <= centerNoteOffset ? "up" : "down"
     );
 
-    if (offset <= 0) {
+    if (offset < 0) {
       stem.length = (noteHeight / 2) * (centerNoteOffset - offset);
-    } else if (offset >= 12) {
+    } else if (offset > 12) {
       stem.length = (noteHeight / 2) * (offset - centerNoteOffset);
     }
 
